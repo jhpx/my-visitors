@@ -1,22 +1,22 @@
 <?php
 /**
- * 访客统计圖
+ * 訪客統計圖
  */
 defined('ABSPATH') or die('This file can not be loaded directly.');
 $system_usage = round(memory_get_usage()/1024/1024, 2); ?>
 
 <div id="w" class="wrap">
- <div class="icon32"><img src="<?php echo plugins_url('images/stat32.gif', __FILE__) ?>" alt="" /></div>
- <h2>访客统计图</h2>
+ <div class="icon32" style="background:url(<?php echo plugins_url('my-visitors/images/stat32.gif'); ?>) no-repeat;"></div>
+ <h2>訪客統計圖</h2>
 <br/>
 <div id="radio_area">
-图标类型:　
-   <label><input type="radio" name="tu" onclick="jQuery('.ht, .hc, .sc').hide();jQuery('.st').show()" value="st" /> 点击量堆叠图</label>　
-   <label><input type="radio" name="tu" onclick="jQuery('.st, .hc, .sc').hide();jQuery('.ht').show()" value="ht" /> 点击量直方图</label>　
-   <label><input type="radio" name="tu" onclick="jQuery('.ht, .st, .hc').hide();jQuery('.sc').show()" value="sc" /> 访客人数堆叠图</label>　
-   <label><input type="radio" name="tu" onclick="jQuery('.ht, .st, .sc').hide();jQuery('.hc').show()" value="hc" /> 访客人数直方图</label>
+圖表類型:　
+   <label><input type="radio" name="tu" onclick="jQuery('.ht, .hc, .sc').hide();jQuery('.st').show()" value="st" /> 點擊量堆疊圖</label>　
+   <label><input type="radio" name="tu" onclick="jQuery('.st, .hc, .sc').hide();jQuery('.ht').show()" value="ht" /> 點擊量直方圖</label>　
+   <label><input type="radio" name="tu" onclick="jQuery('.ht, .st, .hc').hide();jQuery('.sc').show()" value="sc" /> 訪客人數堆疊圖</label>　
+   <label><input type="radio" name="tu" onclick="jQuery('.ht, .st, .sc').hide();jQuery('.hc').show()" value="hc" /> 訪客人數直方圖</label>
 </div>
-<div style="float:left;width:0;margin:10px 0 0 5px;color:#bbb">数量</div>
+<div style="float:left;width:0;margin:10px 0 0 5px;color:#bbb">數量</div>
 <div style="width:100%;height:250px;margin:8px 0 24px 0;border-top:1px solid #ccd;border-bottom:3px solid #aac;background:#f2f2f8">
   <div class="board"></div><div class="board"></div><div class="board"></div><div class="board"></div>
 </div>
@@ -38,19 +38,19 @@ $system_usage = round(memory_get_usage()/1024/1024, 2); ?>
  $sel = "SELECT date_gmt, COUNT(ip) AS hit, COUNT(DISTINCT ip) AS cnt FROM $visitors WHERE";
  $rq = "date_gmt > '$end_date' GROUP BY date_gmt ORDER BY date_gmt DESC";
 
- $date = $wpdb->get_col("SELECT date_gmt FROM $visitors WHERE $rq");              // query 1/10
+ $date = $wpdb->get_col("SELECT date_gmt FROM $visitors WHERE $rq");                   // query 1/10
 
 if (!empty($date)) {
 
- $bo = $wpdb->get_results("$sel os='' AND browser!='' AND browser!='?' AND $rq"); // query 2/10
- $ie = $wpdb->get_results("$sel os!='' AND browser='MSIE' AND $rq");              // query 3/10
- $fx = $wpdb->get_results("$sel os!='' AND browser='Firefox' AND $rq");           // query 4/10
- $gc = $wpdb->get_results("$sel os!='' AND browser LIKE 'Chrome%' AND $rq");      // query 5/10
- $op = $wpdb->get_results("$sel os!='' AND browser LIKE 'Opera' AND $rq");        // query 6/10
- $sf = $wpdb->get_results("$sel os!='' AND browser='Safari' AND $rq");            // query 7/10
- $mb = $wpdb->get_results("$sel os='Mobile' AND $rq");                            // query 8/10
- $un = $wpdb->get_results("$sel (browser='' OR browser='?') AND $rq");            // query 9/10
- $ot = $wpdb->get_results("$sel os!='' AND browser!='' AND browser!='?' AND browser!='MSIE' AND browser!='Firefox' AND browser NOT LIKE 'Chrome%' AND browser NOT LIKE 'Opera%' AND browser!='Safari' AND os!='Mobile' AND $rq"); // query 10/10
+ $bo = $wpdb->get_results("$sel os='' AND browser!='' AND browser!='?' AND $rq");      // query 2/10
+ $ie = $wpdb->get_results("$sel os!='' AND browser='MSIE' AND $rq");                   // query 3/10
+ $fx = $wpdb->get_results("$sel os!='' AND browser='Firefox' AND $rq");                // query 4/10
+ $gc = $wpdb->get_results("$sel os!='' AND browser LIKE 'Chrome%' AND $rq");           // query 5/10
+ $op = $wpdb->get_results("$sel os!='' AND browser='Opera' AND os!='Mobile' AND $rq"); // query 6/10
+ $sf = $wpdb->get_results("$sel os!='' AND browser='Safari' AND $rq");                 // query 7/10
+ $mb = $wpdb->get_results("$sel os='Mobile' AND $rq");                                 // query 8/10
+ $un = $wpdb->get_results("$sel (browser='' OR browser='?') AND $rq");                 // query 9/10
+ $ot = $wpdb->get_results("$sel os!='' AND browser!='' AND browser!='?' AND browser!='MSIE' AND browser!='Firefox' AND browser NOT LIKE 'Chrome%' AND browser!='Opera' AND browser!='Safari' AND os!='Mobile' AND $rq"); // query 10/10
 
  foreach($bo as $a) {$d = $a->date_gmt; $bo_hit[$d] = $a->hit; $bo_cnt[$d] = $a->cnt;}
  foreach($ie as $a) {$d = $a->date_gmt; $ie_hit[$d] = $a->hit; $ie_cnt[$d] = $a->cnt;}
@@ -116,17 +116,17 @@ if ($max_s_hit * $max_h_hit * $max_s_cnt * $max_h_cnt != 0) {
   <thead>
    <tr>
     <th class="manage-column" style="width:7%">日期      </th>
-    <th class="manage-column" style="width:10%">综合浏览量</th>
-    <th class="manage-column" style="width:9%">爬虫      </th>
+    <th class="manage-column" style="width:10%">綜合瀏覽量</th>
+    <th class="manage-column" style="width:9%">爬蟲      </th>
     <th class="manage-column" style="width:9%">MSIE      <div class="th-box c-ie"></div></th>
     <th class="manage-column" style="width:8%">Firefox   <div class="th-box c-fx"></div></th>
     <th class="manage-column" style="width:8%">Chrome    <div class="th-box c-gc"></div></th>
     <th class="manage-column" style="width:7%">Opera     <div class="th-box c-op"></div></th>
     <th class="manage-column" style="width:7%">Safari    <div class="th-box c-sf"></div></th>
-    <th class="manage-column" style="width:6%">手机      <div class="th-box c-mb"></div></th>
+    <th class="manage-column" style="width:6%">手機      <div class="th-box c-mb"></div></th>
     <th class="manage-column" style="width:7%">其它      <div class="th-box c-ot"></div></th>
     <th class="manage-column" style="width:7%">未知      </th>
-    <th class="manage-column" style="width:9%">访问数    </th>
+    <th class="manage-column" style="width:9%">訪問數    </th>
    </tr>
   </thead>
 
@@ -142,8 +142,8 @@ if ($max_s_hit * $max_h_hit * $max_s_cnt * $max_h_cnt != 0) {
   $max_height = 240;                       // max-height(240px)
   $st_unit_hight = $max_height/$max_s_hit; // 點擊量堆疊單位高度(px)
   $ht_unit_hight = $max_height/$max_h_hit; // 點擊量直方單位高度(px)
-  $sc_unit_hight = $max_height/$max_s_cnt; // 访客人數堆疊單位高度(px)
-  $hc_unit_hight = $max_height/$max_h_cnt; // 访客人數直方單位高度(px)
+  $sc_unit_hight = $max_height/$max_s_cnt; // 訪客人數堆疊單位高度(px)
+  $hc_unit_hight = $max_height/$max_h_cnt; // 訪客人數直方單位高度(px)
 
   $margin_left = $client_width - $wrap_width + 12; // margin-left(px)
   $margin_right= 18;                       // margin-right(18px)
@@ -205,7 +205,7 @@ while (isset($hit[$i])) {
   }
   echo "</tr>\n";
 
-/* 访客人數堆疊圖 */
+/* 訪客人數堆疊圖 */
   echo "<tr class='sc hidden'>\n";
   for ($j = 2; $j < 9; $j++) {
     $right  = round($s_right, 3) .'%';
@@ -221,7 +221,7 @@ while (isset($hit[$i])) {
   }
   echo "</tr>\n";
 
-/* 访客人數直方圖 */
+/* 訪客人數直方圖 */
   echo "<tr class='hc hidden'>\n";
   for ($j = 2; $j < 9; $j++) {
     $right  = round($day_pos - $split_width*($j-1) + $split_padding, 3) .'%';
@@ -303,7 +303,7 @@ while (isset($hit[$i])) {
  echo "\n</tr>\n</table>\n";
 
 /* 百分比 */
- echo "<br/>\n<div style=''>各浏览器所占比例: <span style='font-size:11px;color:#666'>(以 \"唯一 IP\" 计数)</span></div>\n<table style='width:100%;height:24px'>\n<tr>\n";
+ echo "<br/>\n<div style=''>各瀏覽器所佔比例: <span style='font-size:11px;color:#666'>(以 \"唯一 IP\" 計數)</span></div>\n<table style='width:100%;height:24px'>\n<tr>\n";
  $sum = array_sum(array_slice($total_cnt, 2, 7));
  for ($i = 2; $i < 9; $i++) {
    $percent[$i] = round($total_cnt[$i]*100 / $sum, 2). "%";
@@ -316,8 +316,8 @@ while (isset($hit[$i])) {
 <div>
 提示: 
 <ol>
-<li>表格前面数字是 "点击量", 后面括号内的数字是 "唯一 IP 的访客人数". 例: 某人点击 3 个页面, 就是 3 (1).</li>
-<li>把"点击量" 除以 "唯一 IP 访客人数", 就是平均浏页数.</li>
+<li>表格前面數字是 "點擊量", 後面括號內的數字是 "唯一 IP 的訪客人數". 例: 某人點擊 3 個頁面, 就是 3 (1).</li>
+<li>把 "點擊量" 除以 "唯一 IP 訪客人數", 就是平均瀏覽頁數.</li>
 </ol>
 </div>
 
@@ -327,9 +327,9 @@ jQuery(document).ready(function($){
  $('input:radio').bind('focus',function(){if(this.blur)this.blur()});
  $('input:radio').attr('checked',false); $('input:radio:first').attr('checked',true);
  $('tr .block').prepend("<span style='display:block;margin:0 2px;border:1px solid #eee;-moz-box-shadow: rgba(255,255,255,1) 0 2px 5px;-webkit-box-shadow: rgba(255,255,255,1) 0 2px 5px;-khtml-box-shadow: rgba(255,255,255,1) 0 2px 5px;box-shadow: rgba(255,255,255,1) 0 2px 5px;'><\/span>");
- $('.block').mouseover(function(){ts=$(this).attr('abbr');$('#footer').after('<div id="ts" style="width:250px;position:absolute;bottom:20000px;z-index:999"><div style="float:right;background:#fff;border:1px solid #666;padding:4px 10px;-moz-border-radius:5px;-khtml-border-radius:5px;-webkit-border-radius:5px;border-radius:5px;">'+ts+'<div><\/div>');$('#ts').show();}).mousemove(function(e){$('#ts').css({left: e.pageX-270, top: e.pageY});}).mouseout(function(){$('#ts').hide(0,function(){$(this).remove()});})
- $('.board,td').click(function(){$('tr').not($('.tt')).css({'background':''});$('tr td.ex').css({'background':'#ccd','color':'#21759b'});})
- $('.c-dt').click(function(){dt = $(this).attr('abbr').substr(0,10);$('#date-'+dt).css({'background':'#def'});$('#date-'+dt).children('td.ex').css({'background':'#abe','color':'#245'});})
+ $('.block').mouseover(function(){abbr=$(this).attr('abbr');$('#footer').after('<div id="ts" style="width:250px;position:absolute;bottom:20000px;z-index:999"><div style="float:right;background:#fff;border:1px solid #666;padding:4px 10px;-moz-border-radius:5px;-khtml-border-radius:5px;-webkit-border-radius:5px;border-radius:5px;">'+abbr+'<\/div><\/div>');$(this).mousemove(function(e){$('#ts').css({left: e.pageX-270, top: e.pageY})})}).mouseout(function(){$('#ts').remove()});
+ $('.board,td').click(function(){$('tr').not($('.tt')).css({'background':''});$('tr td.ex').css({'background':'#ccd','color':'#21759b'})});
+ $('.c-dt').click(function(){abbr=$(this).attr('abbr').substr(0,10);$('#date-'+abbr).css({'background':'#def'});$('#date-'+abbr).children('td.ex').css({'background':'#abe','color':'#245'})});
 });
 //]]>
 </script>
@@ -349,7 +349,8 @@ jQuery(document).ready(function($){
  $plug_usage = $memory_get_peak_usage - $system_usage;
  $now_usage = round(memory_get_usage()/1024/1024, 2) - $system_usage;
  echo "<br/><span class='subsubsub'>loading ", get_num_queries(), " queries, ", timer_stop(), " seconds.
- <br/>可用内存: $memory_limit MB, 峰值占用: $memory_get_peak_usage MB, 占用比例: $memory_peak_usage_percent%
- <br/>系統占用: $system_usage MB, 本插件峰值占用: $plug_usage MB, 本插件目前占用: $now_usage MB</span>";
+ <br/>可用內存: $memory_limit MB, 峰值佔用: $memory_get_peak_usage MB, 佔用比例: $memory_peak_usage_percent%
+ <br/>系統佔用: $system_usage MB, 本插件峰值佔用: $plug_usage MB, 本插件目前佔用: $now_usage MB</span>";
 ?>
+
 </div>

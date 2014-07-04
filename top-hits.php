@@ -1,13 +1,13 @@
 <?php
 /**
- * 热门排行
+ * 熱門排行
  */
 defined('ABSPATH') or die('This file can not be loaded directly.');
 $system_usage = round(memory_get_usage()/1024/1024, 2); ?>
 
 <div class="wrap">
- <div style="float:left;height:40px;margin:12px 6px 0 0;width:50px;"><img src="<?php echo plugins_url('images/top50.gif', __FILE__) ?>" alt="" /></div>
- <h2>热门排行</h2>
+ <div class="icon32" style="width:50px;height:40px;margin:6px 6px 0 0;background:url(<?php echo plugins_url('my-visitors/images/top50.gif'); ?>) no-repeat;"></div>
+ <h2>熱門排行</h2>
 
 <?php
 // max_tophit
@@ -45,9 +45,9 @@ if (!empty($rq_all)) {
   }
 
 // for sub-folder blog
- global $sub_url;
- $host = 'http://' . $_SERVER['HTTP_HOST'];
- $sub_url = str_replace($host, '', get_option('home'));
+// global $sub_url;
+// $host = 'http://' . $_SERVER['HTTP_HOST'];
+// $sub_url = str_replace($host, '', get_option('home'));
 
 ?>
 
@@ -56,9 +56,9 @@ if (!empty($rq_all)) {
 <div id="col-right" style="width:51%">
 
 <div id="radio_post" style="width:300px; margin-bottom:10px; background:#eef; border:1px solid #ccc; -moz-border-radius:12px; -khtml-border-radius:12px; -webkit-border-radius:12px; border-radius:12px; padding:6px 20px; padding:4px 20px\9">
-页面点击排行:　
-   <label><input type="radio" name="top" onclick="jQuery('#top_hit .all, #top_hit .bot').hide();jQuery('#top_hit .man').show()" value="man" /> 访客</label>　
-   <label><input type="radio" name="top" onclick="jQuery('#top_hit .all, #top_hit .man').hide();jQuery('#top_hit .bot').show()" value="bot" /> 爬虫</label>　
+頁面點擊排行:　
+   <label><input type="radio" name="top" onclick="jQuery('#top_hit .all, #top_hit .bot').hide();jQuery('#top_hit .man').show()" value="man" /> 訪客</label>　
+   <label><input type="radio" name="top" onclick="jQuery('#top_hit .all, #top_hit .man').hide();jQuery('#top_hit .bot').show()" value="bot" /> 爬蟲</label>　
    <label><input type="radio" name="top" onclick="jQuery('#top_hit .bot, #top_hit .man').hide();jQuery('#top_hit .all').show()" value="all" /> 全部</label>
 </div>
 
@@ -66,11 +66,11 @@ if (!empty($rq_all)) {
   <thead>
    <tr>
     <th class="manage-column" style="width:8%">排行</th>
-    <th class="manage-column" style="width:27%">页面请求</th>
+    <th class="manage-column" style="width:27%">頁面請求</th>
   <?php if (get_option('permalink_structure') == '') { ?>
-    <th class="manage-column" style="width:50%">文章标题</th>
+    <th class="manage-column" style="width:50%">文章標題</th>
   <?php } ?>
-    <th class="manage-column" style="width:15%">访问次数</th>
+    <th class="manage-column" style="width:15%">訪問次數</th>
    </tr>
   </thead>
 
@@ -87,8 +87,8 @@ function top_hit($req, $class) {
    $url = $key_nams[$i];
    $cnt = $req[$url];
 
-     $url_d = esc_attr(urldecode(urldecode($url)));
-     $url = esc_attr($url);
+     $url_d = htmlspecialchars(urldecode(urldecode($url)));
+     $url = htmlspecialchars($url);
 
      // table css
      $css = $i % 2 ? $class .' alternate' : $class;
@@ -97,7 +97,7 @@ function top_hit($req, $class) {
      if (strpos($url, '[404]') > -1) $url = substr($url, 5);
 
      // for sub-folder blog
-     if (!empty($sub_url) && ord($url) == 47) $url = $sub_url. $url;
+     //if ($sub_url && ord($url) == 47) $url = $sub_url. $url;
 
    // post title
    if (get_option('permalink_structure') == '') { // 默認鏈接才能用
@@ -118,7 +118,7 @@ function top_hit($req, $class) {
        $pid = strpos($url_d, '&') ? substr($url_d, $tmp, strpos($url_d, "&")-$tmp) : substr($url_d, $tmp);
        $page = strpos($url_d, '&') ? ' p.'. substr($url_d, strpos($url_d, "&")+11) : '';
        foreach($q_cats as $q_cat) {
-         if ($pid == $q_cat->term_id) $post_title = '分类: '. $q_cat->name . $page;
+         if ($pid == $q_cat->term_id) $post_title = '分類: '. $q_cat->name . $page;
        }
      }
      elseif (strpos($url_d, 'tag=')) {
@@ -126,7 +126,7 @@ function top_hit($req, $class) {
        $pid = substr($url_d, strpos($url_d, '=')+1);
        $pid = strpos($url_d, '&') ? substr($url_d, $tmp, strpos($url_d, "&")-$tmp) : substr($url_d, $tmp);
        $page = strpos($url_d, '&') ? ' p.'. substr($url_d, strpos($url_d, "&")+11) : '';
-       $post_title = '标签: '. $pid. $page;
+       $post_title = '標簽: '. $pid. $page;
      }
      elseif (stripos($url_d, 'p=')|| strpos($url_d, 'page_id=')){
        $tmp = strpos($url_d, '=') + 1;
@@ -137,31 +137,34 @@ function top_hit($req, $class) {
        foreach($q_posts as $q_post) {
        if ($pid == $q_post->ID) $post_title = $q_post->post_title.$page;
        }
-       if ($pid == 404) $post_title = '404 测试页';
+       if ($pid == 404) $post_title = '404 測試頁';
      }
      elseif (strpos($url_d,'m=')) {
        $tmp = strpos($url_d, '=') + 1;
        $pid = substr($url_d, strpos($url_d, '=')+1);
        $pid = strpos($url_d, '&') ? substr($url_d, $tmp, strpos($url_d, "&")-$tmp) : substr($url_d, $tmp);
        $page = strpos($url_d, '&') ? ' p.'. substr($url_d, strpos($url_d, "&")+11) : '';
-       $post_title = '存档: '. $pid. $page;
+       $post_title = '存檔: '. $pid. $page;
      }
      elseif (strpos($url_d,'v_sortby=')) {
        $page = substr($url_d, strpos($url_d, "&")+24);
-       $post_title = '存档排序 '. $page;
+       $post_title = '存檔排序 '. $page;
      }
-     elseif ($url_d == '/' || rtrim($url_d, '?') == '/') $post_title = '首页';
+     elseif ($url_d == '/' || rtrim($url_d, '?') == '/') $post_title = '首頁';
      elseif (strpos($url_d,'TB_iframe=')) {
-       $post_title = '首页 (浮动框架)';
+       $post_title = '首頁 (浮動框架)';
      }
      elseif (strpos($url_d,'paged=')) {
-       $post_title = '首页 p.'. substr($url_d,strpos($url_d,'=')+1);
+       $post_title = '首頁 p.'. substr($url_d,strpos($url_d,'=')+1);
      }
      elseif (strpos($url_d,'comments-')) {
-       $post_title = '( 评论 )';
+       $post_title = '( 評論 )';
+     }
+     elseif (strpos($url_d,'?feed=')) {
+       $post_title = '( feed )';
      }
      elseif (strpos($url_d,'wp-login')) {
-       $post_title = '( 登陆 )';
+       $post_title = '( 登入 )';
      }
 
      $post_title = "<td>$post_title</td>";
@@ -193,14 +196,14 @@ function top_hit($req, $class) {
 <br/>
 <br/>
 <div style="width:200px; margin-bottom:10px; background:#eef; border:1px solid #ccc; -moz-border-radius:12px; -khtml-border-radius:12px; -webkit-border-radius:12px; border-radius:12px; padding:6px 20px;">
-来源网站排行:　(不计爬虫)
+來源網站排行:　(不計爬蟲)
 </div>
  <table class="widefat fixed">
   <thead>
    <tr>
     <th class="manage-column" style="width:10%">排行</th>
-    <th class="manage-column" style="width:70%">来源网站</th>
-    <th class="manage-column" style="width:20%">访问次数</th>
+    <th class="manage-column" style="width:70%">來源網站</th>
+    <th class="manage-column" style="width:20%">訪問次數</th>
    </tr>
   </thead>
 
@@ -217,8 +220,8 @@ if (!empty($not_srch)) {
     $i_d = str_pad($i + 1, 3, '0', STR_PAD_LEFT);
     $tr_color = $i % 2 ? '' : 'class="alternate"';
     $key_d = rawurldecode(rawurldecode($key[$i]));
-    $key_d = esc_attr(mb_convert_encoding($key_d, 'UTF-8', 'UTF-8,GBK,BIG-5'));
-    $key_a = esc_attr($key[$i]);
+    $key_d = htmlspecialchars(mb_convert_encoding($key_d, 'UTF-8', 'UTF-8,GBK,BIG-5'));
+    $key_a = htmlspecialchars($key[$i]);
     echo "<tr $tr_color><td class='nc' style='background:#eee'>$i_d</td><td><a href='$key_a' target='_blank'>$key_d</a></td><td>$value[$i]</td></tr>";
   }
 
@@ -237,7 +240,7 @@ if (!empty($not_srch)) {
 <div id="col-left" style="width:48%">
 
 <div id="radio_search" style="width:270px; margin-bottom:10px; background:#eef; border:1px solid #ccc; -moz-border-radius:12px; -khtml-border-radius:12px; -webkit-border-radius:12px; border-radius:12px; padding:6px 20px; padding:4px 20px\9">
-关键字排行:　
+關鍵字排行:　
    <label><input type="radio" name="search" onclick="jQuery('#col-left .sit').hide();jQuery('#col-left .eng').show()" value="eng" /> 搜索引擎</label>　
    <label><input type="radio" name="search" onclick="jQuery('#col-left .eng').hide();jQuery('#col-left .sit').show()" value="sit" /> 站內搜索</label>
 </div>
@@ -246,9 +249,9 @@ if (!empty($not_srch)) {
   <thead>
    <tr>
     <th class="manage-column" style="width:8%">排行</th>
-    <th class="manage-column" style="width:37%">原始链接</th>
-    <th class="manage-column" style="width:40%">关键字</th>
-    <th class="manage-column" style="width:15%">访问次数</th>
+    <th class="manage-column" style="width:37%">原始鏈接</th>
+    <th class="manage-column" style="width:40%">關鍵字</th>
+    <th class="manage-column" style="width:15%">訪問次數</th>
    </tr>
   </thead>
 
@@ -270,8 +273,8 @@ function top_search($req, $class) {
      $url_d = @mb_convert_encoding($url_d, 'UTF-8', 'UTF-8,GBK,BIG-5'); // Chinese encoding
 
      // for sub-folder blog
-     if (!empty($sub_url) && ord($url) == 47) $url = $sub_url. $url;
-     $url = esc_attr($url);
+     //if (!empty($sub_url) && ord($url) == 47) $url = $sub_url. $url;
+     $url = htmlspecialchars($url);
 
      // keyword
     $kw_d = strtr($url_d, array('aq=' => '', 'oq=' => ''));
@@ -291,13 +294,13 @@ function top_search($req, $class) {
          $kw = substr($kw_d, $bgn_q, $end_q);
          if ((int)$kw) $kw = '';
        }
-       $kw_d = '(图片) '. mb_convert_encoding($kw, 'UTF-8') .': '. substr($kw_d, $bgn, $end);
+       $kw_d = '(圖片) '. mb_convert_encoding($kw, 'UTF-8') .': '. substr($kw_d, $bgn, $end);
       }
       elseif (strpos($kw_d,'imagesa')) { // youdao
          $bgn_q = strpos($kw_d,'q=')+2;
          $end_q = strpos($kw_d,'&',$bgn_q) ? strpos($kw_d,'&',$bgn_q)-$bgn_q : 500;
          $kw = substr($kw_d, $bgn_q, $end_q);
-       $kw_d = '(图片) '. mb_convert_encoding($kw, 'UTF-8');
+       $kw_d = '(圖片) '. mb_convert_encoding($kw, 'UTF-8');
       }
       elseif (strpos($kw_d,'query=')) {
        $bgn = strpos($kw_d,'query=')+6;
@@ -344,15 +347,19 @@ function top_search($req, $class) {
        $url_d = substr($url_d, 0, strpos($url_d,'/', 8));
     }
 
-    $url_d = esc_attr($url_d);
-    $url   = esc_attr($url);
-    $kw_d  = esc_attr(trim($kw_d));
-    $kw    = esc_attr(trim($kw));
+    $url_d = htmlspecialchars
+($url_d);
+    $url   = htmlspecialchars
+($url);
+    $kw_d  = htmlspecialchars
+(trim($kw_d));
+    $kw    = htmlspecialchars
+(trim($kw));
 
     $i_d   = str_pad($i + 1, 3, '0', STR_PAD_LEFT);
 
     if ($kw != '') @$kw_array[strtolower($kw)] += $cnt;
-    if (strpos($kw_d,'(图片)') > -1) $kw = "<span style='color:green'>$kw_d</span>";
+    if (strpos($kw_d,'(圖片)') > -1) $kw = "<span style='color:green'>$kw_d</span>";
 
     $css = $i % 2 ? $class .' alternate' : $class;
 
@@ -377,23 +384,23 @@ if (!empty($sit_srch)) {top_search($sit_srch, 'sit hidden'); unset($sit_srch);}
 <div>
 提示:
 <ul>
-<li>不同来路或不同中文编码, 会有相同的关键字. 分开显示的目的, 是可查看到搜索的原始链接.</li>
+<li>不同來路或不同中文編碼, 會有相同的關鍵字. 分開顯示的目的, 是可查看到搜索的原始鏈接.</li>
 </ul>
 </div>
 
 <br/>
 <div style="width:250px; margin-bottom:10px; background:#eef; border:1px solid #ccc; -moz-border-radius:12px; -khtml-border-radius:12px; -webkit-border-radius:12px; border-radius:12px; padding:6px 20px;">
-关键字综合排行:  (相同关键字合并计数)
+關鍵字綜合排行:　(相同關鍵字合併計數)
 </div>
  <table class="widefat fixed">
   <thead>
    <tr>
     <th class="manage-column" style="width:6%">排行</th>
-    <th class="manage-column" style="width:20%">关键字</th>
-    <th class="manage-column" style="width:7%">访问次数</th>
+    <th class="manage-column" style="width:20%">關鍵字</th>
+    <th class="manage-column" style="width:7%">訪問次數</th>
     <th class="manage-column" style="width:6%">排行</th>
-    <th class="manage-column" style="width:20%">关键字</th>
-    <th class="manage-column" style="width:7%">访问次数</th>
+    <th class="manage-column" style="width:20%">關鍵字</th>
+    <th class="manage-column" style="width:7%">訪問次數</th>
    </tr>
   </thead>
 
@@ -459,4 +466,5 @@ jQuery(document).ready(function($){
  <br/>可用內存: $memory_limit MB, 峰值佔用: $memory_get_peak_usage MB, 佔用比例: $memory_peak_usage_percent%
  <br/>系統佔用: $system_usage MB, 本插件峰值佔用: $plug_usage MB, 本插件目前佔用: $now_usage MB</span>";
 ?>
+
 </div>

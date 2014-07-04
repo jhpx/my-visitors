@@ -1,7 +1,7 @@
 <?php
 /*
   Plugin Name: My Visitors
-  Version: 1.2.6
+  Version: 1.4
   Plugin URI: http://kan.willin.org/?p=1335
   Description: My personal visitor statistics.
   Author: Willin Kan
@@ -18,11 +18,11 @@ if (is_admin()) {
 
 /* 後台管理頁面 */
 
-// 访客統計
+// 訪客統計
 function statistics_page() {
  include('statistics.php');
 }
-// 访客細節
+// 訪客細節
 function details_page() {
  include('details.php');
 }
@@ -34,7 +34,7 @@ function tophits_page() {
 function query_page() {
  include('query.php');
 }
-// 文章点击
+// 文章點擊
 function postviews_page() {
  include('postviews.php');
 }
@@ -45,15 +45,15 @@ function option_page() {
 
 // 加入菜單
 function add_pluglin_menu() {
- $visitor_statistics = add_menu_page('My Visitors',    '访客',     'manage_options', 'visitor-statistics', '', plugins_url('images/stat.gif', __FILE__));
-  add_submenu_page('visitor-statistics', 'Statistics', '访客统计', 'manage_options', 'visitor-statistics', 'statistics_page');
-  add_submenu_page('visitor-statistics', 'Details',    '访客细节', 'manage_options', 'visitor-details',    'details_page');
-  add_submenu_page('visitor-statistics', 'Tophits',    '热门排行', 'manage_options', 'visitor-tophits',    'tophits_page');
-  add_submenu_page('visitor-statistics', 'Query',      '记录查询', 'manage_options', 'visitor-query',      'query_page');
-  add_submenu_page('visitor-statistics', 'Postviews',  '文章点击', 'manage_options', 'visitor-postviews',  'postviews_page');
-  $visitor_option = add_submenu_page('visitor-statistics', 'Option', '管理选项', 'administrator', 'visitor-options', 'option_page');
+ $visitor_statistics = add_menu_page('My Visitors',    '訪客',     'manage_options', 'visitor-statistics', '',  plugins_url('my-visitors/images/stat.gif'));
+  add_submenu_page('visitor-statistics', 'Statistics', '訪客統計', 'manage_options', 'visitor-statistics', 'statistics_page');
+  add_submenu_page('visitor-statistics', 'Details',    '訪客細節', 'manage_options', 'visitor-details',    'details_page');
+  add_submenu_page('visitor-statistics', 'Tophits',    '熱門排行', 'manage_options', 'visitor-tophits',    'tophits_page');
+  add_submenu_page('visitor-statistics', 'Query',      '記錄查詢', 'manage_options', 'visitor-query',      'query_page');
+  add_submenu_page('visitor-statistics', 'Postviews',  '文章點擊', 'manage_options', 'visitor-postviews',  'postviews_page');
+  $visitor_option = add_submenu_page('visitor-statistics', 'Option', '管理選項', 'administrator', 'visitor-options', 'option_page');
 
-function statistics_css() { // 访客統計用的 css
+function statistics_css() { // 訪客統計用的 css
 echo '
 <style type="text/css">
 #radio_area{width:640px; margin-left:20px; background:#eef; border:1px solid #ccc; -moz-border-radius:12px; -khtml-border-radius:12px; -webkit-border-radius:12px; border-radius:12px; padding:6px 20px; padding:4px 20px\9}
@@ -103,7 +103,7 @@ function myvisitors_activate() {
 // 數據庫若無 'visitors' table 則建立
  if ($wpdb->get_var("show tables like '$visitors'") != $visitors) {
   $wpdb->query("CREATE TABLE ". $visitors ." (
-  id       smallint(8)  NOT NULL auto_increment,
+  id       int(8)       NOT NULL auto_increment,
   date_gmt date         NOT NULL DEFAULT '0000-00-00',
   time_gmt time         NOT NULL DEFAULT '00:00:00',
   ip       varchar(32)  NOT NULL,
@@ -111,7 +111,7 @@ function myvisitors_activate() {
   name     varchar(100) NOT NULL,
   requrl   varchar(300) NOT NULL,
   refurl   varchar(300) NOT NULL,
-  agent    varchar(200) NOT NULL,
+  agent    varchar(300) NOT NULL,
   browser  varchar(32)  NOT NULL,
   ver      varchar(32)  NOT NULL,
   os       varchar(32)  NOT NULL,
@@ -121,7 +121,8 @@ function myvisitors_activate() {
 
 // 建立 'my_visitors' option
  if (!get_option('my_visitors')) {
-  $options = array(1, 1, '', 1, 60, 90, 30, 90, 20, 0, '', 1, 10, 20, 30, 0, 0, '', 0, 0, 0, 1, 0, 0); // 內容請參考 option.php
+  $today = gmdate('Y-m-d', time() + get_option('gmt_offset')*3600); // 當天日期
+  $options = array(1, 1, '', 1, 30, 90, 30, 90, 20, 0, '', 1, 10, 10, 30, 0, 0, '', '', 0, 0, 1, 0, 0); // 內容請參考 option.php
   update_option('my_visitors', $options);
  }
 }
@@ -144,14 +145,14 @@ register_deactivation_hook(__FILE__, 'myvisitors_deactivate');
 } else {
 
 /* 前台執行 */
-// 記錄访客資料 & 訪問計數
+// 記錄訪客資料 & 訪問計數
 function record_visitors($arg = '') {
  include('record.php');
 }
-add_action('wp_head', 'record_visitors');      // $arg = ''
-add_action('comment_post', 'record_visitors'); // $arg = $comment_id
-add_action('wp_login', 'record_visitors');     // $arg = $user_login
-add_filter('login_errors', 'record_visitors'); // $arg = $errors
+add_action('template_redirect', 'record_visitors'); // $arg = ''
+add_action('comment_post', 'record_visitors');      // $arg = $comment_id
+add_action('wp_login', 'record_visitors');          // $arg = $user_login
+add_filter('login_errors', 'record_visitors');      // $arg = $errors
 
 }
 
@@ -161,59 +162,61 @@ $email_enable = $options[9];
 $last_backup  = $options[10];
 $mail_days    = $options[11];
 $next_mail    = $options[17];
-$test         = $options[18];
+$last_check   = $options[18];
 $daily_backup = $options[21];
 
 $today = gmdate('Y-m-d', time() + get_option('gmt_offset')*3600); // 當天日期
 
 /* 每天只運行一次, 由訪問頁面觸發 */
-if ((($last_backup && $last_backup != $today && $daily_backup) || $next_mail == $today || $test) && ($email_enable || $daily_backup)) {
- $end_date = gmdate('Y-m-d', time() + get_option('gmt_offset')*3600 - ($keep_days-1)*24*3600); // 算出分界
- $excess = "FROM $visitors WHERE date_gmt < '$end_date'";
+if ($last_check && $last_check != $today) {
+  $end_date = gmdate('Y-m-d', time() + get_option('gmt_offset')*3600 - ($keep_days-1)*24*3600); // 算出分界
+  $excess = "FROM $visitors WHERE date_gmt < '$end_date'";
+  if ($wpdb->get_var("SELECT COUNT(*) $excess") > 0) {
+    $wpdb->query("DELETE QUICK $excess"); // 達到保存最多天數, 自動刪除多餘記錄
+    $wpdb->query("OPTIMIZE TABLE $visitors"); // 刪除後進行優化
+  }
 
- if ($wpdb->get_var("SELECT COUNT(*) $excess") > 0) {
-  $wpdb->query("DELETE $excess"); // 達到保存最多天數, 自動刪除多餘記錄
-  $wpdb->query("OPTIMIZE TABLE $visitors"); // 刪除後進行優化
- }
+  // 在預設日期運行
+  if ((($daily_backup && $last_backup != $today) || $next_mail <= $today || $last_check == 'option_updated') && ($email_enable || $daily_backup)) {
 
-/* 備份路徑 */
- $key = substr(md5(DB_NAME), -10);
- $file_dir = ABSPATH . "wp-content/plugins/my-visitors/backup_$key/";
- $filename = DB_NAME . '-' . gmdate('ymd', time() + get_option('gmt_offset')*3600) . '.sql';
- if (@function_exists('gzencode')) $filename .= '.gz'; // gzip
- 
- if (!is_file($file_dir.$filename)) {
-   $table_name_array = $wpdb->get_col('SHOW TABLES'); // 查詢所有表名
-   include('sql-dump.php'); // 導出數據庫
+    // 備份路徑
+    $key = substr(md5(DB_NAME), -10);
+    $file_dir = ABSPATH . "wp-content/plugins/my-visitors/backup_$key/";
+    $filename = DB_NAME . '-' . gmdate('ymd', time() + get_option('gmt_offset')*3600) . '.sql';
+    if (function_exists('gzencode')) $filename .= '.gz'; // gzip
 
-    /* 郵寄數據備份 */
-   if ($email_enable && ($next_mail == $today || $test) && @filesize($file_dir . $filename) > 500) {
-    global $phpmailer; // 採用 phpmailer 方式
-    class_exists('PHPMailer') or require(ABSPATH . WPINC . '/class-phpmailer.php');
-    $phpmailer = new PHPMailer();
-    $phpmailer->AddAddress(get_bloginfo('admin_email'));
-    $phpmailer->AddAttachment("$file_dir$filename");
-    $phpmailer->Body = '这是由 My Visitors 插件所自动生成的数据库备份.';
-    $phpmailer->CharSet = 'UTF-8';
-    $phpmailer->ContentType = 'text/plain';
-    $phpmailer->FromName = get_option('blogname');
-    $phpmailer->From = 'no-reply@' . preg_replace('#^www\.#', '', strtolower($_SERVER['SERVER_NAME']));
-    $phpmailer->Subject = "数据库备份- $filename";
-    $phpmailer->Send(); // 寄出
-    if (!$test) $options[17] = gmdate("Y-m-d", strtotime("$mail_days day") + get_option('gmt_offset')*3600); # option $next_mail
-   }
- }
+    // 導出數據庫
+    if (!is_file($file_dir.$filename)) {
+      $table_name_array = $wpdb->get_col('SHOW TABLES'); // 查詢所有表名
+      include('sql-dump.php'); 
 
- $options[10] = $today; # option $last_backup
- $options[18] = 0;      # option $test
- update_option('my_visitors', $options); // 日期存入 $options
+      // 郵寄數據備份
+      if ($email_enable && ($next_mail <= $today || $last_check == 'option_updated') && @filesize($file_dir . $filename) > 500) {
+        global $phpmailer; // 採用 phpmailer 方式
+        class_exists('PHPMailer') or require(ABSPATH . WPINC . '/class-phpmailer.php');
+        $phpmailer = new PHPMailer();
+        $phpmailer->AddAddress( get_option('admin_email') ); // 可改另一個郵箱
+        $phpmailer->AddAttachment("$file_dir$filename");
+        $phpmailer->Body = '這是由 My Visitors 插件所自動生成的數據庫備份.';
+        $phpmailer->CharSet = 'UTF-8';
+        $phpmailer->ContentType = 'text/plain';
+        $phpmailer->FromName = html_entity_decode(get_option('blogname'), ENT_QUOTES);
+        $phpmailer->From = 'no-reply@' . preg_replace('#^www\.#', '', strtolower($_SERVER['SERVER_NAME']));
+        $phpmailer->Subject = "數據庫備份- $filename";
+        $phpmailer->Send(); // 寄出
+        if ($last_check != 'option_updated') $options[17] = gmdate("Y-m-d", strtotime("$mail_days day") + get_option('gmt_offset')*3600); # option $next_mail
+      }
+    }
+    $options[10] = $today; # option $last_backup
+  }
+  $options[18] = $today;   # option $last_check
+  update_option('my_visitors', $options); // 日期存入 $options
 }
 
 
-
-// 簡易 PostViews
+/* 簡易 PostViews */
 if (!function_exists('post_views')) {
- function post_views($before = '(点击 ', $after = ' 次)', $echo = 1) {
+ function post_views($before = '(點擊 ', $after = ' 次)', $echo = 1) {
   global $post;
   $post_ID = $post->ID;
   $views = (int)get_post_meta($post_ID, 'views', true);
@@ -223,29 +226,29 @@ if (!function_exists('post_views')) {
 }
 
 if (!function_exists('get_most_viewed')) {
- function get_most_viewed($mode = '', $limit = 10, $show_date = 0, $term_id = 0, $after = ' 次点击') {
+ function get_most_viewed($mode = 'post', $limit = 10, $show_date = 0, $term_id = 0, $after = ' 次點擊') {
   global $wpdb, $post;
   $output = '';
-  $mode = ($mode == '') ? 'post' : $mode;
-  $type_sql = ($mode != 'both') ? "AND post_type='$mode'" : '';
+  $type_sql = ($mode != 'both' && $mode != '') ? "AND post_type='$mode'" : '';
   $term_sql = (is_array($term_id)) ? "AND $wpdb->term_taxonomy.term_id IN (" . join(',', $term_id) . ')' : ($term_id != 0 ? "AND $wpdb->term_taxonomy.term_id = $term_id" : '');
   $term_sql.= $term_id ? " AND $wpdb->term_taxonomy.taxonomy != 'link_category'" : '';
   $inr_join = $term_id ? "INNER JOIN $wpdb->term_relationships ON ($wpdb->posts.ID = $wpdb->term_relationships.object_id) INNER JOIN $wpdb->term_taxonomy ON ($wpdb->term_relationships.term_taxonomy_id = $wpdb->term_taxonomy.term_taxonomy_id)" : '';
 
   // database query
-  $most_viewed = $wpdb->get_results("SELECT ID, post_date, post_title, (meta_value+0) AS views FROM $wpdb->posts LEFT JOIN $wpdb->postmeta ON ($wpdb->posts.ID = $wpdb->postmeta.post_id) $inr_join WHERE post_status = 'publish' AND post_password = '' $term_sql $type_sql AND meta_key = 'views' GROUP BY ID ORDER BY views DESC LIMIT $limit");
+  $most_viewed = $wpdb->get_results("SELECT ID, post_date, post_title, (meta_value+0) AS views FROM $wpdb->posts LEFT JOIN $wpdb->postmeta ON ($wpdb->posts.ID = $wpdb->postmeta.post_id) $inr_join WHERE post_status = 'publish' AND post_password = '' $term_sql $type_sql AND meta_key = 'views' ORDER BY views DESC LIMIT $limit");
   if ($most_viewed) {
    foreach ($most_viewed as $viewed) {
     $post_ID    = $viewed->ID;
     $post_views = number_format($viewed->views);
-    $post_title = esc_attr($viewed->post_title);
-    $get_permalink = esc_attr(get_permalink($post_ID));
+    $post_title = htmlspecialchars($viewed->post_title);
+    $get_permalink = htmlspecialchars(get_permalink($post_ID));
+    //$get_permalink = get_option('home').'/?p='.$post_ID; // 默認鏈接 && post
     $output .= "<li><a href='$get_permalink' title='$post_title'>$post_title</a>";
     if ($show_date) {
       $posted = date(get_option('date_format'), strtotime($viewed->post_date));
       $output .= " - $posted";
     }
-    $output .= " - $post_views $after</li>";
+    $output .= " - $post_views $after</li>\n";
    }   
   } else {
    $output = "<li>N/A</li>\n";

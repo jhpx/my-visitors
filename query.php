@@ -6,8 +6,8 @@ defined('ABSPATH') or die('This file can not be loaded directly.');
 $system_usage = round(memory_get_usage()/1024/1024, 2); ?>
 
 <div class="wrap">
- <div class="icon32"><img src="<?php echo plugins_url('images/query32.png', __FILE__) ?>" alt="" /></div>
- <h2>记录查询</h2>
+ <div class="icon32" style="background:url(<?php echo plugins_url('my-visitors/images/query32.png'); ?>) no-repeat;"></div>
+ <h2>記錄查詢</h2>
 
 <?php
 
@@ -35,12 +35,12 @@ if (isset($_POST['search'])) {
  // others
  if ($req_ots == '[404]')      $sql.= "AND requrl LIKE '[404]%' ";
  if ($req_ots == '神秘人')     $sql.= "AND browser = '?' ";
- if ($req_ots == '使用代理')   $sql.= "AND (region LIKE '%代理%' OR region LIKE '%真实%') ";
+ if ($req_ots == '使用代理')   $sql.= "AND (region LIKE '%代理%' OR region LIKE '%真實%') ";
  if ($req_ots == '未知爬蟲')   $sql.= "AND (browser = 'bot' OR browser = 'spider') ";
- if ($req_ots == '未知浏览器') $sql.= "AND browser = '' AND requrl NOT LIKE '[404]%' ";
- if ($req_ots == '危险份子')   $sql.= "AND (browser = '' OR browser = '?') AND requrl LIKE '[404]%' ";
+ if ($req_ots == '未知瀏覽器') $sql.= "AND browser = '' AND requrl NOT LIKE '[404]%' ";
+ if ($req_ots == '危險份子')   $sql.= "AND (browser = '' OR browser = '?') AND requrl LIKE '[404]%' ";
  if ($req_ots == '登入成功')   $sql.= "AND name LIKE '%(l)' ";
- if ($req_ots == '登入错误')   $sql.= "AND name LIKE '%(e)' ";
+ if ($req_ots == '登入錯誤')   $sql.= "AND name LIKE '%(e)' ";
 
  // database query
  if ($sql != "WHERE id!='' ") $results = $wpdb->get_results("SELECT * FROM $visitors $sql ORDER BY id DESC"); // query 8/8 .. 桉 $_POST 取出查詢記錄
@@ -69,7 +69,7 @@ if (isset($_POST['search'])) {
  }
  $name = array_values(array_unique($name));
 
-   $ots = array('[404]', '神秘人', '使用代理', '未知爬虫', '未知浏览器', '危险份子', '登入成功', '登入错误');
+   $ots = array('[404]', '神秘人', '使用代理', '未知爬蟲', '未知瀏覽器', '危險份子', '登入成功', '登入錯誤');
 ?>
 
 <form id="search" action="" method="post" style="float:left; padding:6px;">
@@ -97,7 +97,7 @@ if (isset($_POST['search'])) {
 
 // region
 if (function_exists('curl_init')) {
- echo "　地区: <select name='req_region'><option value=''>----</option>";
+ echo "　地區: <select name='req_region'><option value=''>----</option>";
  for ($i = 0; isset($region[$i]); $i++) {
    $selected = '';
    if ($req_region == $region[$i]) $selected = "selected='selected'";
@@ -107,7 +107,7 @@ if (function_exists('curl_init')) {
 }
 
 // name
- echo "　名称: <select name='req_name'><option value=''>----</option>";
+ echo "　名稱: <select name='req_name'><option value=''>----</option>";
  for ($i = 0; isset($name[$i]); $i++) {
    $selected = '';
    if ($req_name == $name[$i]) $selected = "selected='selected'";
@@ -118,7 +118,7 @@ if (function_exists('curl_init')) {
 echo "<br class='clear' /><br/>\n";
 
 // browser
- echo "　浏览器: <select name='req_browser'><option value=''>----</option>";
+ echo "　瀏覽器: <select name='req_browser'><option value=''>----</option>";
  for ($i = 0; isset($browser[$i]); $i++) {
    $selected = '';
    if ($req_browser == $browser[$i]) $selected = "selected='selected'";
@@ -127,7 +127,7 @@ echo "<br class='clear' /><br/>\n";
  echo "</select>\n";
 
 // bot
- echo "　爬虫: <select name='req_bot'><option value=''>----</option>";
+ echo "　爬蟲: <select name='req_bot'><option value=''>----</option>";
  for ($i = 0; isset($bot[$i]); $i++) {
    $selected = '';
    if ($req_bot == $bot[$i]) $selected = "selected='selected'";
@@ -136,7 +136,7 @@ echo "<br class='clear' /><br/>\n";
  echo "</select>\n";
 
 // os
- echo "　操作系統: <select name='req_os'><option value=''>----</option>";
+ echo "　作業系統: <select name='req_os'><option value=''>----</option>";
  for ($i = 0; isset($os[$i]); $i++) {
    $selected = '';
    if ($req_os == $os[$i]) $selected = "selected='selected'";
@@ -155,10 +155,9 @@ echo "<br class='clear' /><br/>\n";
  }
  echo "</select>\n";
 
-
 ?>
 
- <input type='submit' class='button-highlighted' value='查询'/>　
+ <input type='submit' class='button-highlighted' value='查詢'/>　
  </p>
 </form>
 
@@ -177,7 +176,7 @@ echo "<br class='clear' />\n";
  // table layout
  if (!empty($results)) {
   include('table.php');
-  echo "共找到 ", $cnt, " 笔资料.";
+  echo "共找到 ", $cnt, " 筆資料.";
 
  } elseif (isset($_POST['search'])) {
   echo "<br class='clear' /><div style='margin:0 20px'>", __('Search Results'), ': ', __('No results found.'), "</div>";
