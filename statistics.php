@@ -25,7 +25,7 @@ $system_usage = round(memory_get_usage()/1024/1024, 2); ?>
 <?php
 
  if (!isset($_GET['w'])) { // clientWidth & offsetTop
-   echo "<script type='text/javascript'>\nlocation.href='${_SERVER['SCRIPT_NAME']}?${_SERVER['QUERY_STRING']}&c='+document.body.clientWidth+'&w='+document.getElementById('w').offsetWidth+'&t='+document.getElementById('t').offsetTop;\n</script>\n";
+   echo "<script type='text/javascript'>\nlocation.href='${_SERVER['SCRIPT_NAME']}?${_SERVER['QUERY_STRING']}&w='+document.getElementById('w').offsetWidth+'&t='+document.getElementById('t').offsetTop;\n</script>\n";
    exit();
  }
 
@@ -135,8 +135,7 @@ if ($max_s_hit * $max_h_hit * $max_s_cnt * $max_h_cnt != 0) {
 /* 圖形基本參數 (高度用 px 固定, 寬度用 % 自適應窗口寬度)
  * 這邊用的是 absolute-top-right, 窗口右上角為座標起點.
  */
-  $client_width = isset($_GET['c']) ? $_GET['c'] : 1280;     // 取 js 記錄的窗口寬度
-  $wrap_width   = isset($_GET['w']) ? $_GET['w'] : 821;      // 取 js 記錄的物件寬度
+  $wrap_width   = isset($_GET['w']) ? $_GET['w'] : 1061;      // 取 js 記錄的物件寬度
   $bottom       = isset($_GET['t']) ? $_GET['t'] - 27 : 408; // 取 js 記錄的圖表基準位置
 
   $max_height = 240;                       // max-height(240px)
@@ -145,9 +144,9 @@ if ($max_s_hit * $max_h_hit * $max_s_cnt * $max_h_cnt != 0) {
   $sc_unit_hight = $max_height/$max_s_cnt; // 訪客人數堆疊單位高度(px)
   $hc_unit_hight = $max_height/$max_h_cnt; // 訪客人數直方單位高度(px)
 
-  $margin_left = $client_width - $wrap_width + 12; // margin-left(px)
-  $margin_right= 18;                       // margin-right(18px)
-  $right_space = $margin_right/$client_width*100; // margin-right 化為 % (用於加法要乘100)
+  $margin_left = 23; // margin-left(px)
+  $margin_right= 23;                       // margin-right(23px)
+  $right_space = $margin_right/$wrap_width*100; // margin-right 化為 % (用於加法要乘100)
 
   $scale_rate = .8;                        // 方塊縮小寬度(80%), 相當於留出 padding
   $padding_rate = (1-$scale_rate)/2;       // 方塊縮小後, 左右的 padding(%)
@@ -167,7 +166,7 @@ while (isset($hit[$i])) {
   $week = $week_name[date('w', mktime(0, 0, 0, $date_array[1], $date_array[2], $date_array[0]))];
 
   // 圖形位置計算
-  $avg_width = ($client_width-$margin_left-$margin_right)/$client_width/$days*100; // 總寬度(px)減去左右 margin 換算為圖形區域(%)後, 按天數平分(%)
+  $avg_width = ($wrap_width-$margin_left-$margin_right)/$wrap_width/$days*100; // 總寬度(px)減去左右 margin 換算為圖形區域(%)後, 按天數平分(%)
   $day_pos = $right_space + $avg_width*($i+1-$padding_rate); // 每日左邊線位置(%)
   $s_width = $avg_width*$scale_rate;             // 堆疊寬度(%)
   $s_right = $day_pos-$s_width;                  // 堆疊右邊線位置(%)
