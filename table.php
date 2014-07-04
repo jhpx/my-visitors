@@ -91,7 +91,7 @@ defined('ABSPATH') or die('This file can not be loaded directly.'); ?>
       }
     }
     echo "<tr class='$css'><td valign='top'> $id </td><td valign='top'>", substr($db->date_gmt, 5), "<br/>", $db->time_gmt, "</td><td valign='top'>";
-    $whois = "http://www.ip138.com/ips.asp?ip=$db->ip";
+    $whois = "http://www.ip138.com/ips138.asp?ip=$db->ip";
     echo "<a href='$whois' target='_blank'>$db->ip</a>　", esc_html($db->region), "<br/>", $name_array[0], $commt_link, "</td><td valign='top'>"; 
 
     // request

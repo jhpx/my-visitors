@@ -55,7 +55,7 @@ if (is_file($qqwry)) {
 } else {
 
   function whois($ip) {
-    $whois = "http://www.ip138.com/ips.asp?ip=$ip";
+    $whois = "http://www.ip138.com/ips138.asp?ip=$ip";
     $ch = curl_init();
      curl_setopt ($ch, CURLOPT_URL, $whois);
      curl_setopt ($ch, CURLOPT_CONNECTTIMEOUT, 5);
