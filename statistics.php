@@ -145,8 +145,8 @@ if ($max_s_hit * $max_h_hit * $max_s_cnt * $max_h_cnt != 0) {
   $sc_unit_hight = $max_height/$max_s_cnt; // 訪客人數堆疊單位高度(px)
   $hc_unit_hight = $max_height/$max_h_cnt; // 訪客人數直方單位高度(px)
 
-  $margin_left = $client_width - $wrap_width + 12; // margin-left(px)
-  $margin_right= 18;                       // margin-right(18px)
+  $margin_left = $client_width - $wrap_width + 12 - 150; // margin-left(px)
+  $margin_right= 23;                       // margin-right(23px)
   $right_space = $margin_right/$client_width*100; // margin-right 化為 % (用於加法要乘100)
 
   $scale_rate = .8;                        // 方塊縮小寬度(80%), 相當於留出 padding

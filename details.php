@@ -31,8 +31,6 @@ $system_usage = round(memory_get_usage()/1024/1024, 2); ?>
 
  $results = $wpdb->get_results("SELECT * FROM $visitors WHERE date_gmt LIKE '$query_date' ORDER BY id DESC"); // query 3/3 .. 取出當日記錄, $wpdb->get_results 會自動分段取資料, 查詢次數不定
 
-  $browser_query = isset($_GET['b']) ? $_GET['b'] : 'browser';
-  $tr_css = $browser_query != 'browser' ? 'none' : '';
 ?>
 
 <br/>
@@ -52,9 +50,9 @@ function txt_fs(){ld=document.getElementById("ld");if(t!=0){ld.style.color='#'+p
 jQuery(document).ready(function($){
  $('input:button, input:submit').bind('focus',function(){if(this.blur)this.blur()});
  $('input:checkbox').attr('checked',false);
- $('#<?php echo $browser_query ?> input:checkbox').attr('checked',true);
- $('#tb tr').css('display','<?php echo $tr_css ?>');
- $('.<?php echo $browser_query ?>').css('display','');
+ $('#browser input:checkbox').not('#bo input:checkbox, #un input:checkbox').attr('checked',true);
+ $('#tb tr').css('display','');
+ $('.bo, .un').css('display','none');
  $('input').click(function(){ck=$('.'+$(this).val());ck.css('display')=='none'?ck.css('display',''):ck.css('display','none')});
  $('#hover_area').show();$('#ld').hide();
  $('#tb tr').mouseover(function(){$(this).css('background','#def')}).mouseout(function(){$(this).css('background','')});
